@@ -1,0 +1,9 @@
+Mancala Heuristic Round-Robin Results
+Games per matchup: 100, Search depth: 6
+
+heuristic-1 vs heuristic-2 -> wins: 76 / 23, draws: 1, heuristic-1 win perc: 76%, heuristic-2 win perc: 23%, draws perc: 1%
+heuristic-1 vs heuristic-3 -> wins: 79 / 18, draws: 3, heuristic-1 win perc: 79%, heuristic-3 win perc: 18%, draws perc: 3%
+heuristic-1 vs heuristic-4 -> wins: 89 / 6, draws: 5, heuristic-1 win perc: 89%, heuristic-4 win perc: 6%, draws perc: 5%
+heuristic-2 vs heuristic-3 -> wins: 60 / 38, draws: 2, heuristic-2 win perc: 60%, heuristic-3 win perc: 38%, draws perc: 2%
+heuristic-2 vs heuristic-4 -> wins: 51 / 46, draws: 3, heuristic-2 win perc: 51%, heuristic-4 win perc: 46%, draws perc: 3%
+heuristic-3 vs heuristic-4 -> wins: 54 / 44, draws: 2, heuristic-3 win perc: 54%, heuristic-4 win perc: 44%, draws perc: 2%
