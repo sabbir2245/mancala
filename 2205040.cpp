@@ -432,7 +432,7 @@ public:
 int main() {
   srand((unsigned)time(nullptr));
 
-  int GAMES_PER_MATCHUP = 10;
+  int GAMES_PER_MATCHUP = 100;
   vector<int> depths = {4, 6, 8};
 
   vector<Heuristics::Entry> heuristics = Heuristics::registry();
