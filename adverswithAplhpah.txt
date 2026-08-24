@@ -1,0 +1,625 @@
+ADVERSARIAL SEARCH AND ALPHA-BETA PRUNING
+==========================================
+
+1. What is Adversarial Search?
+------------------------------
+
+Adversarial search is a search technique used in problems where two or
+more players compete against each other.
+
+Unlike normal search, where the environment may be fixed, in adversarial
+search the opponent is also making decisions.
+
+Examples:
+
+- Chess
+- Checkers
+- Tic-Tac-Toe
+- Mancala
+- Connect Four
+
+In these games, my best move depends on what the opponent does next.
+
+For example, suppose I have two possible moves:
+
+    Move A -> gives me a score of 10 if the opponent makes a bad move
+    Move B -> gives me a score of 6 even if the opponent plays well
+
+A simple search might choose Move A.
+
+However, in an adversarial game, we assume that the opponent will also
+play intelligently.
+
+Therefore, if the opponent can respond to Move A and reduce its score
+to 2, then Move B may actually be the better choice.
+
+This is why adversarial search considers both players' decisions.
+
+
+2. Maximizing and Minimizing Players
+------------------------------------
+
+In a two-player game, we normally consider two types of players:
+
+MAX
+    The AI/player trying to maximize the evaluation score.
+
+MIN
+    The opponent trying to minimize the evaluation score.
+
+For example:
+
+                 Current Position
+                       |
+             ---------------------
+             |                   |
+           Move A              Move B
+             |                   |
+          Opponent            Opponent
+          /     \             /     \
+         3       8           6       5
+
+MAX chooses between Move A and Move B.
+
+For Move A, MIN will choose:
+
+    min(3, 8) = 3
+
+For Move B, MIN will choose:
+
+    min(6, 5) = 5
+
+Therefore MAX chooses:
+
+    max(3, 5) = 5
+
+So Move B is selected.
+
+
+3. Minimax
+----------
+
+Minimax is one of the most common algorithms used for adversarial
+search.
+
+The basic idea is:
+
+    MAX tries to maximize the score.
+    MIN tries to minimize the score.
+
+The search creates a game tree.
+
+For example:
+
+                    MAX
+                  /     \
+                A         B
+               / \       / \
+              3   8     6   5
+
+MIN chooses the smallest value from each branch:
+
+    A -> min(3, 8) = 3
+    B -> min(6, 5) = 5
+
+Then MAX chooses the largest result:
+
+    max(3, 5) = 5
+
+Therefore:
+
+    MAX chooses B.
+
+
+4. Why Do We Need a Heuristic?
+------------------------------
+
+In a real game, the entire game tree can be extremely large.
+
+For example, an AI may not be able to search until the actual end of
+the game.
+
+Instead, it searches a limited number of moves.
+
+When the search reaches the depth limit, we need to estimate how good
+the current board is.
+
+This is called a heuristic evaluation function.
+
+For example, in Mancala we might calculate:
+
+    score =
+        storage difference
+        + extra turn bonus
+        + capture bonus
+
+A positive score means the position is good for the AI.
+
+A negative score means the position is good for the opponent.
+
+
+5. What is Alpha-Beta Pruning?
+------------------------------
+
+Alpha-Beta pruning is an optimization of the Minimax algorithm.
+
+It allows us to avoid searching parts of the game tree that cannot
+possibly affect the final decision.
+
+The important idea is:
+
+    If we already know that a branch cannot produce a better result,
+    there is no reason to continue searching that branch.
+
+This is called pruning.
+
+
+6. Alpha
+--------
+
+Alpha represents the best score that MAX can guarantee so far.
+
+In simple terms:
+
+    alpha = best option found so far for MAX
+
+
+Initially:
+
+    alpha = -infinity
+
+
+Whenever MAX finds a better move:
+
+    alpha = max(alpha, currentScore)
+
+
+Example:
+
+    MAX has already found a move worth 7.
+
+Therefore:
+
+    alpha = 7
+
+
+If another branch cannot possibly give MAX more than 7,
+MAX does not need to explore that branch completely.
+
+
+7. Beta
+-------
+
+Beta represents the best score that MIN can guarantee so far.
+
+In simple terms:
+
+    beta = best option found so far for MIN
+
+
+Initially:
+
+    beta = +infinity
+
+
+Whenever MIN finds a better option:
+
+    beta = min(beta, currentScore)
+
+
+Example:
+
+    MIN has already found a move that gives MAX a score of 4.
+
+Therefore:
+
+    beta = 4
+
+
+If another branch can already be shown to be at least 7 for MAX,
+MIN will never choose it because MIN already has an option giving MAX 4.
+
+
+8. The Pruning Condition
+------------------------
+
+The most important condition in Alpha-Beta pruning is:
+
+    if (beta <= alpha)
+        break;
+
+This means that the current branch does not need to be explored further.
+
+Why?
+
+Suppose:
+
+    alpha = 7
+    beta = 4
+
+Then:
+
+    beta <= alpha
+
+    4 <= 7
+
+This means MAX already has a choice worth at least 7, while MIN has
+already found a way to keep the result at 4 or lower.
+
+Therefore, this branch cannot change the final decision.
+
+We can safely stop searching it.
+
+
+9. Simple Alpha-Beta Example
+----------------------------
+
+Consider this tree:
+
+                       MAX
+                     /     \
+                   A         B
+                  / \       / \
+                 3   5     2   9
+
+
+First search A.
+
+MIN chooses:
+
+    min(3, 5) = 3
+
+Therefore:
+
+    alpha = 3
+
+
+Now search B.
+
+The first value is:
+
+    2
+
+MIN can already choose 2.
+
+Therefore:
+
+    beta = 2
+
+
+Now:
+
+    beta <= alpha
+
+    2 <= 3
+
+So the value 9 does not need to be checked.
+
+The final result is:
+
+    MAX chooses A
+
+
+10. Alpha-Beta in the Given Mancala Code
+-----------------------------------------
+
+The Alpha-Beta function in the program is:
+
+    double alphaBeta(
+        MancalaBoard board,
+        int depth,
+        double alpha,
+        double beta,
+        int currentPlayer,
+        int rootPlayer,
+        bool leadingExtraTurn,
+        int leadingCaptured
+    )
+
+The important parameters are:
+
+    board
+        Current Mancala board.
+
+    depth
+        How many levels of the game tree are still searched.
+
+    alpha
+        Best value currently guaranteed to MAX.
+
+    beta
+        Best value currently guaranteed to MIN.
+
+    currentPlayer
+        Player whose turn it currently is.
+
+    rootPlayer
+        The AI player whose move is being selected.
+
+
+11. Terminal Condition
+----------------------
+
+The search stops when:
+
+    if (depth == 0 || board.isGameOver())
+
+This means either:
+
+1. The maximum search depth has been reached.
+
+OR
+
+2. The Mancala game has ended.
+
+
+At this point, the heuristic function evaluates the board:
+
+    return config.heuristic(...);
+
+
+12. Determining MAX and MIN
+---------------------------
+
+The code uses:
+
+    bool maximizing = (currentPlayer == rootPlayer);
+
+If the current player is the AI that started the search:
+
+    maximizing = true
+
+So the AI tries to maximize the score.
+
+If it is the opponent's turn:
+
+    maximizing = false
+
+So the opponent tries to minimize the score.
+
+
+13. Maximizing Step
+-------------------
+
+For MAX, the code does:
+
+    best = max(best, score);
+
+Then updates alpha:
+
+    alpha = max(alpha, best);
+
+
+This means MAX remembers the best result it has found so far.
+
+
+14. Minimizing Step
+-------------------
+
+For MIN, the code does:
+
+    best = min(best, score);
+
+Then updates beta:
+
+    beta = min(beta, best);
+
+
+This means MIN remembers the smallest result it can force.
+
+
+15. Pruning in the Code
+-----------------------
+
+The actual pruning happens here:
+
+    if (beta <= alpha)
+        break;
+
+Once this condition becomes true, the remaining moves in that branch
+are ignored.
+
+This can significantly reduce the number of positions that need to be
+searched.
+
+
+16. Why Alpha-Beta is Faster
+----------------------------
+
+Normal Minimax may search a very large number of nodes.
+
+For example, if each position has approximately 6 possible moves and
+we search 8 levels:
+
+    6^8 = 1,679,616
+
+possible paths may need to be considered.
+
+Alpha-Beta pruning can eliminate many of these paths.
+
+The exact amount of pruning depends heavily on the order in which moves
+are searched.
+
+Good move ordering produces more pruning.
+
+
+17. Move Ordering in the Program
+--------------------------------
+
+The program has:
+
+    getOrderedMoves()
+
+It tries to search promising moves first.
+
+For example:
+
+    if (extra)
+        score += 10;
+
+    if (captured > 0)
+        score += captured * 2;
+
+Moves that produce an extra turn or capture stones are given higher
+priority.
+
+Then the moves are sorted:
+
+    sort(orderedMoves.begin(), orderedMoves.end(), ...);
+
+
+The purpose is to make Alpha-Beta pruning happen earlier.
+
+
+18. Why Move Ordering Matters
+----------------------------
+
+Suppose MAX finds a very good move early.
+
+Then alpha becomes large.
+
+When searching other branches, a large alpha makes it easier to satisfy:
+
+    beta <= alpha
+
+Therefore, more branches can be pruned.
+
+Bad move ordering may cause fewer branches to be pruned.
+
+Good move ordering can make Alpha-Beta much faster.
+
+
+19. Minimax vs Alpha-Beta
+-------------------------
+
+Minimax:
+
+    Searches the game tree.
+    Considers MAX and MIN decisions.
+    Can become very expensive.
+
+Alpha-Beta:
+
+    Uses the same Minimax logic.
+    Keeps alpha and beta values.
+    Removes branches that cannot affect the result.
+    Produces the same final decision as Minimax
+    when implemented correctly.
+
+
+20. Important Point
+-------------------
+
+Alpha-Beta pruning does NOT change the logic of Minimax.
+
+It only avoids unnecessary work.
+
+Without pruning:
+
+    Search everything
+        |
+        v
+    Evaluate all branches
+        |
+        v
+    Select best move
+
+
+With Alpha-Beta:
+
+    Search a branch
+        |
+        v
+    Determine it cannot improve the answer
+        |
+        v
+    Stop searching that branch
+
+
+21. Overall Flow in the Mancala AI
+----------------------------------
+
+The complete decision process is approximately:
+
+    Current Mancala Board
+            |
+            v
+       Get valid moves
+            |
+            v
+       Order the moves
+            |
+            v
+       Try each move
+            |
+            v
+       Minimax Search
+            |
+            +------------------+
+            |                  |
+           MAX                MIN
+            |                  |
+       maximize score      minimize score
+            |                  |
+            +--------+---------+
+                     |
+                     v
+              Alpha-Beta
+                 Pruning
+                     |
+                     v
+             Heuristic Function
+                     |
+                     v
+               Board Score
+                     |
+                     v
+               Best Move
+
+
+22. Summary
+-----------
+
+Adversarial search is used when an AI has to make decisions while
+considering an opponent who is also trying to win.
+
+Minimax models this situation using:
+
+    MAX -> tries to maximize the score
+
+    MIN -> tries to minimize the score
+
+
+Alpha-Beta pruning improves Minimax by keeping:
+
+    alpha -> best result MAX can guarantee
+
+    beta -> best result MIN can guarantee
+
+
+When:
+
+    beta <= alpha
+
+the remaining part of that branch can be ignored.
+
+Therefore:
+
+    Adversarial Search
+            |
+            v
+          Minimax
+            |
+            v
+      Alpha-Beta Pruning
+            |
+            v
+       Heuristic Function
+            |
+            v
+        Best Move
+
+
+In the Mancala program, these concepts work together to allow the AI
+to look ahead several moves and choose a move that is expected to be
+strong against an opponent.

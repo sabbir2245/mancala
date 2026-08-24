@@ -296,6 +296,7 @@ public:
     return orderedMoves;
   }
 
+
   double alphaBeta(MancalaBoard board, int depth, double alpha, double beta,
                    int currentPlayer, int rootPlayer, bool leadingExtraTurn,
                    int leadingCaptured) {
@@ -313,7 +314,7 @@ public:
 
     auto orderedMoves = getOrderedMoves(board, currentPlayer);
 
-    for (auto [m, _] : orderedMoves) {
+    for (auto [m, f] : orderedMoves) {
       MancalaBoard child = board;
       int captured = 0;
       bool extra = child.move(currentPlayer, m, captured);
@@ -344,7 +345,7 @@ public:
     double bestScore = -1e18;
     int tieCount = 0;
 
-    for (auto [m, _] : orderedMoves) {
+    for (auto [m, f] : orderedMoves) {
       MancalaBoard child = board;
       int captured = 0;
       bool extra = child.move(player, m, captured);
@@ -431,7 +432,7 @@ public:
 int main() {
   srand((unsigned)time(nullptr));
 
-  int GAMES_PER_MATCHUP = 30;
+  int GAMES_PER_MATCHUP = 10;
   vector<int> depths = {4, 6, 8};
 
   vector<Heuristics::Entry> heuristics = Heuristics::registry();
