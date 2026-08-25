@@ -296,6 +296,8 @@ public:
     return orderedMoves;
   }
 
+  //==============
+
 
   double alphaBeta(MancalaBoard board, int depth, double alpha, double beta,
                    int currentPlayer, int rootPlayer, bool leadingExtraTurn,
@@ -429,6 +431,7 @@ public:
   }
 };
 
+#ifndef MANCALA_STANDALONE
 int main() {
   srand((unsigned)time(nullptr));
 
@@ -476,3 +479,4 @@ int main() {
   cout << "\nResults saved to result.txt\n";
   return 0;
 }
+#endif
